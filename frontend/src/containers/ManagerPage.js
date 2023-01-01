@@ -38,7 +38,7 @@ const ManagerPage = () => {
             </Typography>
             <Divider />
             <Stack direction="row" spacing={1}>
-                <Chip label="增新商品種類和品項" variant="outlined" onClick={()=>{handleClick(0)}} />
+                <Chip label="商品種類" variant="outlined" onClick={()=>{handleClick(0)}} />
                 <Chip label="修改商品" variant="outlined" onClick={()=>{handleClick(1)}} />
                 <Chip label="更新訂單狀態" variant="outlined" onClick={()=>{handleClick(2)}} />
                 <Chip label="修改訂單" variant="outlined" onClick={()=>{handleClick(3)}} />

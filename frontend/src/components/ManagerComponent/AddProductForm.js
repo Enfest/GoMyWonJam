@@ -10,18 +10,21 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import dayjs from 'dayjs';
-import { MenuItem } from "@mui/material";
+import { MenuItem, Box, Divider, IconButton} from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 
 //component import
-import BasicDateTimePicker from "./DateTimePicker";
+import OptionTextField from "./OptionTextField";
 
 //hook import 
 import useBackend from "../../containers/hooks/useBackend";
+import { Typography } from "antd";
+import PostAdd from "@mui/icons-material/PostAdd";
 
 //test const define
 const category = [
     {
-        value: "Spring",
+        value: "spring",
         label: "spring"
     },
     {
@@ -42,13 +45,22 @@ const category = [
 //functional component
 const AddProductForm = () => {
     //call hook
-    const {AddCategory} = useBackend();
+    const {AddProductToCategory} = useBackend();
 
     //set state
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(dayjs(""));
     const [name, setName] = useState("");
     const [whichCategory, setWhichCategory] = useState("");
+    const [photoURL, setPhotoURL] = useState("");
+    const [price, setPrice] = useState("");
+    const [note, setNote] = useState("");
+    const [type, setType] = useState("");
+    const [optionType, setOptionType] = useState("");
+    const [optionNum, setOptionNum] = useState(0);
+    const [options, setOptions] = useState([]);
+
+
 
     //function define
     const Cancel = () => {
@@ -56,29 +68,70 @@ const AddProductForm = () => {
         setOpen(false);
     }
 
-    const HandleCategory = (event) => {
-        setWhichCategory(event.target.value);
+    const handleOptions = (newNum) => {
+        setOptionNum(newNum);
+        if(options.length<=newNum){
+            let newArr = [...options];
+            for(let i=0; i<(newNum-options.length); i++){
+                newArr[newArr.length] = ""
+            }
+            setOptions(newArr);
+        }
+        else{
+            let newArr = [];
+            for(let i=0 ; i<newNum; i++){
+                newArr[newArr.length] = options[i];
+            }
+            setOptions(newArr);
+        }
     }
 
-    const onAddCategory = ()=>{
-        console.log("name: ", name);
-        console.log("date: ", date.toString());
-        const newCategory = {cat_name: name, deadLine: date};
-        // AddCategory(newCategory);
+    const onAddProduct = ()=>{
+        if (!name || !whichCategory || !photoURL || !price || !type || !optionNum){
+            return;
+        }
+        const Product = {
+            name: name,
+            category: whichCategory,
+            URL: photoURL,
+            price: price,
+            note: note,
+            product_type: type,
+            option_type: optionNum,
+            options: options
+        }
+        console.log("Product: ", Product);
+        AddProductToCategory(Product);
+        setOpen(false)
+        
 
     }
 
     //return
     return(
-        <>
-        <Button variant="contained" onClick={()=>{setOpen(true)}}>增新商品品項</Button>
-        <Dialog open={open} onClose={()=>{setOpen(false)}} maxWidth={"md"}>
+        <Box>
+            <IconButton 
+                color="primary"
+                aria-label="upload picture"
+                component="label"
+                onClick={()=>{setOpen(true)}}
+                >
+                <AddIcon />
+            </IconButton>
+        <Dialog 
+            open={open} 
+            onClose={()=>{setOpen(false)}} 
+            fullWidth={true}
+            >
             <DialogTitle>增新商品品項</DialogTitle>
             <DialogContent sx={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
                 gap: 1.5
             }}>
+                <Box sx={{
+                    display: "grid", 
+                    gap: 1
+                }}>
                 <TextField
                     autoFocus
                     required
@@ -88,6 +141,8 @@ const AddProductForm = () => {
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={name}
+                    onChange={(e)=>{setName(e.target.value)}}
                 />
                 <TextField
                     id="outlined-select-category"
@@ -96,7 +151,7 @@ const AddProductForm = () => {
                     margin="dense"
                     label="商品種類"
                     value={whichCategory}
-                    onChange={(e)=>{HandleCategory(e)}}
+                    onChange={(e)=>{setWhichCategory(e.target.value)}}
                 >
                     {category.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
@@ -113,6 +168,8 @@ const AddProductForm = () => {
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={photoURL}
+                    onChange={(e)=>{setPhotoURL(e.target.value)}}
                 />
                 <TextField
                     autoFocus
@@ -123,6 +180,8 @@ const AddProductForm = () => {
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={price}
+                    onChange={(e)=>{setPrice(e.target.value)}}
                 />
                 <TextField
                     autoFocus
@@ -132,44 +191,78 @@ const AddProductForm = () => {
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={note}
+                    onChange={(e)=>{setNote(e.target.value)}}
                 />
                 <TextField
                     autoFocus
                     required
                     margin="dense"
                     id="category_name"
-                    label="product type"
+                    label="商品類型"
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={type}
+                    onChange={(e)=>{setType(e.target.value)}}
+                />
+                <TextField
+                    autoFocus
+                    required
+                    margin="dense"
+                    id="option_type"
+                    label="選項類型"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    value={optionType}
+                    onChange={(e)=>{setOptionType(e.target.value)}}
                 />
                 <TextField
                     autoFocus
                     required
                     margin="dense"
                     id="category_name"
-                    label="option type"
+                    label="選項數量"
                     type="text"
                     fullWidth
                     variant="outlined"
+                    value={optionNum}
+                    onChange={(e)=>{handleOptions(e.target.value)}}
                 />
-                <TextField
-                    autoFocus
-                    required
-                    margin="dense"
-                    id="category_name"
-                    label="option number"
-                    type="text"
-                    fullWidth
-                    variant="outlined"
-                />
+                </Box>
+                {optionNum? 
+                <Box sx={{
+                    display: "grid",
+                    gap: 1
+                }}>
+                <Divider />
+                <Typography variant="h6" component="div">選項增新</Typography>
+                <DialogContent sx={{
+                    display: "grid",
+                    gap: 1,
+                    gridTemplateColumns: "1fr 1fr"
+                }}>
+                    {options.map((value,index)=>(
+                        <OptionTextField options={options} setOptions={setOptions}  num={index} key={index} />
+                    ))}
+                </DialogContent>
+                </Box>:<></>}
+            </DialogContent>
+            
+            <DialogContent sx={{
+                display: "grid",
+                gap: 1
+            }}>
+
+                
             </DialogContent>
             <DialogActions>
             <Button onClick={()=>{Cancel()}}>取消</Button>
-            <Button onClick={()=>{onAddCategory()}}>增新</Button>
+            <Button onClick={()=>{onAddProduct()}}>增新</Button>
             </DialogActions>
         </Dialog>
-        </>
+        </Box>
     )
 }
 

@@ -3,13 +3,15 @@ import {useState} from "react";
 
 //mui import 
 import Button from '@mui/material/Button';
-import TextField, { textFieldClasses } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import dayjs from 'dayjs';
+import { Alert, AlertTitle, IconButton, Box } from "@mui/material";
+import PostAdd from "@mui/icons-material/PostAdd";
 
 //component import
 import BasicDateTimePicker from "./DateTimePicker";
@@ -26,12 +28,14 @@ const AddCategoryForm = () => {
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(dayjs(""));
     const [name, setName] = useState("");
+    const [alert, setAlert] = useState(false);
 
     //function define
     const Cancel = () => {
         setDate(dayjs(""));
         setName("");
         setOpen(false);
+        setAlert(false);
     }
 
     const HandleTextChange = (event) => {
@@ -39,6 +43,11 @@ const AddCategoryForm = () => {
     }
 
     const onAddCategory = ()=>{
+        if((!name) || (!date)){
+            setAlert(true);
+            return
+        }
+        setAlert(false);
         const newCategory = {cat_name: name, deadLine: date};
         AddCategory(newCategory);
         setName("");
@@ -50,9 +59,22 @@ const AddCategoryForm = () => {
 
     //return
     return(
-        <>
-        <Button variant="contained" onClick={()=>{setOpen(true)}}>增新商品種類</Button>
-        <Dialog open={open} onClose={()=>{Cancel()}}>
+        <Box sx={{
+            display: "flex"
+        }}>
+        <IconButton 
+            color="primary"
+             aria-label="upload picture"
+            component="label"
+            onClick={()=>{setOpen(true)}}
+            >
+           <PostAdd />
+        </IconButton>
+        {/* <Button variant="contained" onClick={()=>{setOpen(true)}}>增新商品種類</Button> */}
+        <Dialog 
+            open={open} 
+            onClose={()=>{Cancel()}}
+            fullWidth={true}>
             <DialogTitle>增新商品種類</DialogTitle>
             <DialogContent sx={{
                 display: "grid",
@@ -71,13 +93,18 @@ const AddCategoryForm = () => {
                     onChange={(e)=>{HandleTextChange(e)}}
                 />
                 <BasicDateTimePicker date={date} setDate={setDate} />
+                {alert? 
+                <Alert severity="error">
+                    <AlertTitle>錯誤</AlertTitle>
+                    請填完所有資訊
+                </Alert>:<></>}
             </DialogContent>
             <DialogActions>
             <Button onClick={()=>{Cancel()}}>取消</Button>
             <Button onClick={()=>{onAddCategory()}}>增新</Button>
             </DialogActions>
         </Dialog>
-        </>
+        </Box>
     )
 }
 
