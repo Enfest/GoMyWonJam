@@ -12,9 +12,7 @@ import useBackend from '../containers/hooks/useBackend';
 
 const ChangeAddress=({setOpen})=>{
 
-    const [Phone, setPhone] = React.useState('');
     const [value, setValue] = React.useState("");
-    const [Name, setName] = React.useState("");
     const [inputValue, setInputValue] = React.useState("");
     const [county, setCounty] = React.useState("");
 
@@ -24,13 +22,11 @@ const ChangeAddress=({setOpen})=>{
     "屏東縣","花蓮縣","台東縣","澎湖縣","金門縣","連江縣","海南諸島"
     ]
 
-    const {bill, total, currentBillId, userData, stores} = useWebsite();
+    const {currentBillId, userData, stores} = useWebsite();
     const {UpdateBillAddress, GetStores} = useBackend();
 
     React.useEffect(()=>{
         console.log('use effect called.');
-        setPhone(userData.phoneNumber);
-        setName(userData.name);
         setValue(userData.address);
     },[])
 
@@ -40,7 +36,7 @@ const ChangeAddress=({setOpen})=>{
             address : value.substring(0,6)
         }
         UpdateBillAddress(BillInfo);
-        console.log("BillInfo", BillInfo)
+        console.log("BillInfo",BillInfo)
         //navigate("/personal/bills")
     }
 
@@ -93,25 +89,7 @@ const ChangeAddress=({setOpen})=>{
                 helperText="輸入 店號/門市名稱/道路名稱 查找" required/>}
             >
             </Autocomplete>
-            <TextField
-                id="ReceiverName"
-                margin="dense"
-                disabled
-                defaultValue={Name}
-                label="姓名"
-                sx={{gridColumnStart:1,gridColumnEnd:3}}
-            >
-            </TextField>
-            <TextField
-                id="ReceiverPhone"
-                margin="dense"
-                label="手機"
-                disabled
-                defaultValue={Phone}
-                inputMode="tel"
-                sx={{gridColumnStart:1,gridColumnEnd:3}}
-            >
-            </TextField>
+            <Box sx={{height:"100px"}}></Box>
         </CardContent>
     )};
 
